@@ -1,0 +1,9 @@
+{
+    "discord": {
+      "token": "{bot.token}",
+      "appId": "{bot.appId",
+      "appSecret": "{bot.secret}",
+      "commandPrefix":  "{bot.commandPrefix}" 
+    }
+  }
+  
