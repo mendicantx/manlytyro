@@ -17,6 +17,7 @@ namespace ManlyTyro
         private IConfigurationRoot _config;
 
         private DiscordClient _discord;
+        private JsonCommandsModule _jsonCommandsModule;
 
         static async Task Main(string[] args) => await new Program().InitBot(args);
 
@@ -35,8 +36,12 @@ namespace ManlyTyro
                     .Build();
 
                 Console.WriteLine("[info] Loading services...");
-                var services = new ServiceCollection()
+                var serviceCollection = new ServiceCollection();
+                ConfigureServices(serviceCollection);
+                var services = serviceCollection
                     .BuildServiceProvider();
+                
+                _jsonCommandsModule = new JsonCommandsModule(services.GetService<IJsonCommands>());
 
                 Console.WriteLine("[info] Initializing Discord client...");
                 _discord = new DiscordClient(new DiscordConfiguration
@@ -55,6 +60,8 @@ namespace ManlyTyro
 
                 commands.RegisterCommands<HumorModule>();
                 commands.RegisterCommands<ReferenceModule>();
+                _discord.MessageCreated += _jsonCommandsModule.HandleMessage;
+
             }
             catch(Exception exInit)
             {
@@ -72,6 +79,10 @@ namespace ManlyTyro
 
             while(!_cts.IsCancellationRequested)
                 await Task.Delay(TimeSpan.FromMinutes(1));
+        }
+
+        private void ConfigureServices(IServiceCollection serviceCollection) {
+            serviceCollection.AddSingleton<IJsonCommands>(new JsonCommands());
         }
     }
 }
