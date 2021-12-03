@@ -14,7 +14,16 @@ public class JsonCommandsModule {
     public async Task HandleMessage(DiscordClient discordClient, MessageCreateEventArgs eventArgs) {
         if (eventArgs.Message.Author == discordClient.CurrentUser)
             return;
-            
+
+        if (eventArgs.MentionedUsers.Contains(discordClient.CurrentUser))
+            await discordClient.SendMessageAsync(eventArgs.Channel, "Hey fuck you too buddy!");
+
+        if (eventArgs.Message.Content.ToUpper().Contains(" SIMP ") || 
+            eventArgs.Message.Content.ToUpper().Contains(" SIMP.") ||
+            eventArgs.Message.Content.ToUpper() == "SIMP")
+            await discordClient.SendMessageAsync(eventArgs.Channel, "https://cdn.discordapp.com/attachments/652887929043025933/916462925395415120/unknown.png");
+        
+
         if (!FirstWordIsCommand(eventArgs))
             return;
         
