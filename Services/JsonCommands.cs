@@ -9,11 +9,16 @@ public interface IJsonCommands {
     string RegisterCommand(string command);
     string UpdateCommand(string command, string commandValue);
     string GetCommandValue(string command);
+    IEnumerable<string> GetCommands();
 }
 public class JsonCommands : IJsonCommands {
 
     private IDictionary<string, string> commands;
     private const string commandsFile = "commands.json";
+
+    public IEnumerable<string> GetCommands() {
+        return commands.Keys;
+    }
 
     public JsonCommands() {
         var text = File.ReadAllText(commandsFile);

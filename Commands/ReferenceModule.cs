@@ -1,14 +1,14 @@
+using System;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using System.Linq;
 
 namespace ManlyTyro.Commands
 {
     public class ReferenceModule : BaseCommandModule
     {
         private string currentAbuLink = string.Empty;
-        private string currentWaffleLink = string.Empty;
-        private string currentAngerLink = "https://cdn.discordapp.com/attachments/653313996241371137/914734144041394226/db7f3f1.jpg";
 
         public IJsonCommands jsonCommands { private get; set; }
 
@@ -16,6 +16,7 @@ namespace ManlyTyro.Commands
         [Description("Registers a new custom command")]
         public async Task RegisterCommand(CommandContext ctx, string command) {
 
+            command = command.ToUpper();
             await ctx.Channel.SendMessageAsync(jsonCommands.RegisterCommand(command));
         }
         
@@ -23,8 +24,27 @@ namespace ManlyTyro.Commands
         [Description("Updates or Creates a new custom command")]
         public async Task UpdateCommand(CommandContext ctx, string command, [RemainingText] string commandValue) {
 
+            command = command.ToUpper();
             await ctx.Channel.SendMessageAsync(jsonCommands.UpdateCommand(command, commandValue));
         }
+
+        [Command("customcom")]
+        [Description("Lists all custom commands")]
+        public async Task CustomComCommand(CommandContext ctx) {
+
+            var allCommands = jsonCommands.GetCommands().OrderBy(x => x);
+            int pageSize = 20;
+            int totalPages = (allCommands.Count() + pageSize - 1)/pageSize;
+            for (int page = 0; page < totalPages; page++) {
+                var currentCommands = allCommands.Skip(page*pageSize).Take(pageSize);
+                var returnString = string.Join(Environment.NewLine, currentCommands);
+                returnString = $"Custom Commands page {page+1} of {totalPages}{Environment.NewLine}{returnString}{Environment.NewLine}";
+                await ctx.Channel.SendMessageAsync(returnString);
+
+            }
+            
+        }
+
         
         [Command("enlir")]
         [Description("Provides links to helpful FFRK information.")]
@@ -58,54 +78,5 @@ namespace ManlyTyro.Commands
             }
         }
 
-        [Command("waffle")]
-        [Description("wafflez")]
-        public async Task WaffleCommand(CommandContext ctx)
-        {
-            if(string.IsNullOrWhiteSpace(currentWaffleLink))
-                await ctx.Channel.SendMessageAsync("Waffle diagram not set. Please set with `!update_waffle [image_url}`.");
-            else
-                await ctx.Channel.SendMessageAsync($"{currentWaffleLink}");    
-        }
-
-        [Command("update_waffle")]
-        [Description("Updates the current diagram for the waffle command.")]
-        [Hidden]
-        [RequireRoles(RoleCheckMode.Any, "Admin", "データマイナー")]
-        public async Task WaffleCommand(CommandContext ctx, [Description("The new image URL for the waffle command.")]string newUrl)
-        {
-            if(string.IsNullOrWhiteSpace(newUrl))
-                await ctx.Message.RespondAsync("You must provide a URL.");
-            else
-            {
-                currentWaffleLink = newUrl;
-                await ctx.Message.RespondAsync("Waffle diagram updated.");
-            }
-        }
-
-        [Command("anger")]
-        [Description("anger")]
-        public async Task AngerCommand(CommandContext ctx)
-        {
-            if(string.IsNullOrWhiteSpace(currentAngerLink))
-                await ctx.Channel.SendMessageAsync("Anger diagram not set. Please set with `!update_anger [image_url}`.");
-            else
-                await ctx.Channel.SendMessageAsync($"{currentAngerLink}");    
-        }
-
-        [Command("update_anger")]
-        [Description("Updates the current diagram for the anger command.")]
-        [Hidden]
-        [RequireRoles(RoleCheckMode.Any, "Admin", "データマイナー")]
-        public async Task AngerCommand(CommandContext ctx, [Description("The new image URL for the anger command.")]string newUrl)
-        {
-            if(string.IsNullOrWhiteSpace(newUrl))
-                await ctx.Message.RespondAsync("You must provide a URL.");
-            else
-            {
-                currentAngerLink = newUrl;
-                await ctx.Message.RespondAsync("Anger diagram updated.");
-            }
-        }
     }
 }
