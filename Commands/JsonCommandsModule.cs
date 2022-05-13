@@ -34,12 +34,12 @@ public class JsonCommandsModule {
             if (eventArgs.Message.Author == discordClient.CurrentUser)
                 return;
 
-            if (eventArgs.MentionedUsers.Contains(discordClient.CurrentUser))
-                await discordClient.SendMessageAsync(eventArgs.Channel, "Hey fuck you too buddy!");
+            //if (eventArgs.MentionedUsers.Contains(discordClient.CurrentUser))
+            //    await discordClient.SendMessageAsync(eventArgs.Channel, "Hey fuck you too buddy!");
 
             SimpCommand(discordClient, eventArgs);
             //SkateCommand(discordClient, eventArgs);
-            ZeroCommand(discordClient, eventArgs);
+            // ZeroCommand(discordClient, eventArgs);
             
 
             if (!FirstWordIsCommand(eventArgs))

@@ -37,7 +37,7 @@ namespace ManlyTyro.Commands
             int totalPages = (allCommands.Count() + pageSize - 1)/pageSize;
             for (int page = 0; page < totalPages; page++) {
                 var currentCommands = allCommands.Skip(page*pageSize).Take(pageSize);
-                var returnString = string.Join(Environment.NewLine, currentCommands);
+                var returnString = string.Join("  ", currentCommands);
                 returnString = $"Custom Commands page {page+1} of {totalPages}{Environment.NewLine}{returnString}{Environment.NewLine}";
                 await ctx.Channel.SendMessageAsync(returnString);
 
